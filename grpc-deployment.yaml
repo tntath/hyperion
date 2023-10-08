@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -f docker-compose.yml
+    kompose.version: 1.31.1 (HEAD)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: grpc
+  name: grpc
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: grpc
+  strategy: {}
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f docker-compose.yml
+        kompose.version: 1.31.1 (HEAD)
+      creationTimestamp: null
+      labels:
+        io.kompose.network/my-nasa-nudge-default: "true"
+        io.kompose.service: grpc
+    spec:
+      containers:
+        - image: grpc
+          name: grpc
+          ports:
+            - containerPort: 50051
+              hostPort: 50051
+              protocol: TCP
+          resources: {}
+      restartPolicy: Always
+status: {}

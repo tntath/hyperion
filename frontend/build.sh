@@ -1,0 +1,1 @@
+protoc --dart_out=grpc:lib -Iprotos api/api.proto --proto_path .

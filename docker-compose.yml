@@ -1,0 +1,54 @@
+version: "3.8"
+
+services:
+  fastapi:
+    build: ./backend-fastapi
+    command: uvicorn main:app --reload --host 0.0.0.0
+    environment:
+      DATABASE_URL: postgresql://myuser:mypassword@db:5432/mydb
+      SQLALCHEMY_WARN_20:
+    # volumes:
+    #   - .backend-fastapi:.
+    ports:
+      - 8000:8000
+    # depends_on:
+    #   - migrations
+  db:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: mypassword
+      POSTGRES_DB: mydb
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready --username myuser --dbname=mydb"]
+      interval: 2s
+      timeout: 5s
+      retries: 5
+  grpc:
+    build:
+      context: ./backend-grpc
+      dockerfile: Dockerfile
+    ports:
+      - 50051:50051
+    # volumes:
+    #   - .backend-grpc:.
+
+  # migrations:
+  #   build: .
+  #   command: alembic upgrade head
+  #   environment:
+  #     DATABASE_URL: postgresql://myuser:mypassword@db:5432/mydb
+  #   depends_on:
+  #     db:
+  #       condition: service_healthy
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8081:8080
+
+volumes:
+  db-data:
